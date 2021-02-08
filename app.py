@@ -1,51 +1,25 @@
-
+import logging
 import os
-from flask import Flask, flash, request, redirect, render_template
-from werkzeug.utils import secure_filename
 
-app=Flask(__name__)
+from flask import Flask, request, send_file
+import xlwings as xw
+from io import BytesIO
 
-app.secret_key = "secret key"
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-
-path = os.getcwd()
-# file Upload
-UPLOAD_FOLDER = os.path.join(path, 'uploads')
-
-if not os.path.isdir(UPLOAD_FOLDER):
-    os.mkdir(UPLOAD_FOLDER)
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
+# called `app` in `main.py`.
+app = Flask(__name__)
 
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@app.route('/')
-def upload_form():
-    return render_template('upload.html')
-
-
-@app.route('/', methods=['POST'])
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            flash('No file selected for uploading')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('File successfully uploaded')
-            return redirect('/')
-        else:
-            flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
-            return redirect(request.url)
+@app.route("/", methods=["GET"])
+def hello():
+    wb = xw.Book(request.files['file'])
+    sht0 = wb.sheets[0]
+    sht0.range('A1').value = 'Hello Paul'
+    a1 = xw.Range('A1')
+    a1.color = (255, 0, 0)
+    writer = BytesIO()
+    wb.save(writer)
+    writer.seek(0)
+    # raiponce = func.HttpResponse(writer.getvalue(), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    return send_file(writer, as_attachment=True,
+    attachment_filename='file.xslx', mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
