@@ -17,9 +17,12 @@ def hello():
     sht0.range('A1').value = 'Hello Paul'
     a1 = xw.Range('A1')
     a1.color = (255, 0, 0)
-    writer = BytesIO()
-    wb.save(writer)
-    writer.seek(0)
-    # raiponce = func.HttpResponse(writer.getvalue(), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    return send_file(writer, as_attachment=True,
-    attachment_filename='file.xslx', mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    wb.save('file.xlsx')
+    # writer = BytesIO()
+    # wb.save(writer)
+    # writer.seek(0)
+    # raiponce = func.HttpResponse(writer.getvalue(), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") 
+    # return send_file(, as_attachment=True,
+    # attachment_filename='file.xslx', mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    return "Hello World"
+
