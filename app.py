@@ -18,6 +18,7 @@ def hello():
     a1 = xw.Range('A1')
     a1.color = (255, 0, 0)
     wb.save('file.xlsx')
+    #firuevne
     # writer = BytesIO()
     # wb.save(writer)
     # writer.seek(0)
